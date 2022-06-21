@@ -9,27 +9,60 @@ from helper import res
 from player import Player
 
 
-pg.init()
-clock = pg.time.Clock()
-screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pg.display.set_caption(GAME_TITLE)
-pg.display.set_icon(pg.image.load(res/"sprites"/"player_sheet.png").subsurface(0, 0, 32, 32))
+class Game:
+    def __init__(self):
+        pg.init()
+        self.clock = pg.time.Clock()
+        self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pg.display.set_caption(GAME_TITLE)
+        pg.display.set_icon(pg.image.load(res / "sprites" / "player_sheet.png").subsurface(0, 0, 32, 32))
+        self.running = True
 
-player = Player(res/"sprites"/"player_sheet.png", (100, 100))
-help(player)
-print(repr(player))
-all_sprites = pg.sprite.Group()
-all_sprites.add(player)
+    def new(self):
+        self.player = Player(res / "sprites" / "player_sheet.png", (100, 100))
+        self.all_sprites = pg.sprite.Group()
+        self.all_sprites.add(self.player)
 
-running = True
-while running:
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            running = False
-    all_sprites.update()
+    def _events(self):
+        """
+        Обратывает события
+        :return:
+        """
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.running = False
 
-    screen.fill((255, 255, 255))
-    all_sprites.draw(screen)
+    def _update(self):
+        """
+        Обновляет спрайты
+        :return:
+        """
+        self.all_sprites.update()
 
-    clock.tick(FPS)
-    pg.display.flip()
+    def _draw(self):
+        """
+        Отрисовывает спрайты
+        :return:
+        """
+        self.screen.fill((255, 255, 255))
+        self.all_sprites.draw(self.screen)
+        pg.display.flip()
+
+    def run(self):
+        """
+        Звпускает игровой цикл
+        :return:
+        """
+        while self.running:
+            self.clock.tick(FPS)
+            self._events()
+            self._update()
+            self._draw()
+
+
+if __name__ == "__main__":
+    game = Game()
+    game.new()
+    game.run()
+#     print(__name__)
+
